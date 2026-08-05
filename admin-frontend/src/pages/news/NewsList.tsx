@@ -72,7 +72,7 @@ export default defineComponent({
     async function doReorder(list: NewsItem[]) {
       reorderLoading.value = true
       try {
-        await api.put('/admin/news/reorder', { company_id: 1, ids: list.map((item) => item.id) })
+        await api.put('/admin/news/reorder', { ids: list.map((item) => item.id) })
         fetchData()
       } catch (e: any) {
         message.error(e.message || '排序失败，请确认后端接口已就绪')

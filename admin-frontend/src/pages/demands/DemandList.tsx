@@ -83,7 +83,7 @@ export default defineComponent({
     async function doReorder(list: DemandItem[]) {
       reorderLoading.value = true
       try {
-        await api.put('/admin/demands/reorder', { company_id: 1, ids: list.map((d) => d.id) })
+        await api.put('/admin/demands/reorder', { ids: list.map((d) => d.id) })
         fetchData()
       } catch (e: any) {
         message.error(e.message || '排序失败')
