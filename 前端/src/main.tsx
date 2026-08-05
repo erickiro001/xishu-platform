@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { MemoryRouter } from 'react-router'
+import { HashRouter } from 'react-router'
 import './index.css'
 import App from './App.tsx'
 
@@ -27,8 +27,8 @@ setTimeout(applySafeAreaFix, 1000)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <MemoryRouter>
+    <HashRouter>
       <App />
-    </MemoryRouter>
+    </HashRouter>
   </StrictMode>,
 )

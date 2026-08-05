@@ -6,7 +6,7 @@ import { getScrollY } from '@/hooks/useListRestore';
 import { LoadingState, ErrorState, EmptyState } from '@/components/States';
 import type { Article } from '@/types';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 12;
 
 export default function AllNewsPage() {
   const navigate = useNavigate();

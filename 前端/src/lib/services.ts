@@ -240,9 +240,11 @@ export async function fetchCompanyDetail(id: string, signal?: AbortSignal): Prom
 }
 
 /* ───────── 需求 ───────── */
+// 注：fetchDemands 已无调用点（DemandsPage 用 fetchDemandsPage），
+// 保留实现但 page_size 限制为 50，避免误用导致全量拉取。
 export async function fetchDemands(signal?: AbortSignal): Promise<Demand[]> {
   const data = await request<PaginatedData<RawDemand>>('/api/v1/demands', {
-    query: { page: 1, page_size: 10000 },
+    query: { page: 1, page_size: 50 },
     signal,
   })
   return (data?.list ?? []).map(mapDemand)
@@ -292,9 +294,11 @@ export async function fetchDemand(id: string, signal?: AbortSignal): Promise<Dem
 }
 
 /* ───────── 新闻 ───────── */
+// 注：fetchArticles 已被 HomePage 弃用（改用 fetchArticlesPage(1,6)），
+// 保留实现但 page_size 限制为 50，避免误用导致全量拉取。
 export async function fetchArticles(signal?: AbortSignal): Promise<Article[]> {
   const data = await request<PaginatedData<RawNews>>('/api/v1/news', {
-    query: { page: 1, page_size: 10000 },
+    query: { page: 1, page_size: 50 },
     signal,
   })
   return (data?.list ?? []).map(mapArticleSummary)
@@ -317,22 +321,10 @@ export async function fetchArticlesPage(
 }
 
 export async function fetchArticle(id: string, signal?: AbortSignal): Promise<NewsArticleDetail | null> {
-  // 后端无单条公开详情接口，循环翻页查找（后端单页上限 50 条）
-  let page = 1
-  let hasMore = true
-  while (hasMore) {
-    if (signal?.aborted) return null
-    const data = await request<PaginatedData<RawNews>>('/api/v1/news', {
-      query: { page, page_size: 50 },
-      signal,
-    })
-    const list = data?.list ?? []
-    const raw = list.find((n) => String(n.id) === id)
-    if (raw) return mapArticleDetail(raw)
-    hasMore = page * 50 < (data?.total ?? 0)
-    page++
-  }
-  return null
+  // 后端已有公开详情接口 GET /api/v1/news/:id，直接按 id 获取（不再循环翻页拉全量）
+  const raw = await request<RawNews>(`/api/v1/news/${id}`, { signal })
+  if (!raw) return null
+  return mapArticleDetail(raw)
 }
 
 /* ───────── 表单提交 ───────── */

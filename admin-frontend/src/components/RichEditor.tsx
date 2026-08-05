@@ -35,6 +35,32 @@ export default defineComponent({
 
     const editorConfig: Partial<IEditorConfig> = {
       placeholder: '请输入正文内容，可通过工具栏插入图片...',
+      // 粘贴拦截：wangeditor 默认 base64LimitSize=0（粘贴图片已走 uploadImage.customUpload），
+      // 但剪贴板里的 data:image 文本不会触发上传，这里统一拦截图片文件转上传换 URL，杜绝 base64 入库。
+      customPaste: (editor, event) => {
+        const files = Array.from(event.clipboardData?.files ?? []).filter((f) =>
+          f.type.startsWith('image/'),
+        )
+        if (files.length === 0) return true // 非图片粘贴走默认行为
+        // 异步上传换 URL（签名要求同步返回 boolean，这里同步返回 false 阻止默认粘贴）
+        void (async () => {
+          try {
+            for (const file of files) {
+              const res = await uploadFile(file)
+              if (res?.url) {
+                editor.dangerouslyInsertHtml(
+                  `<img src="${res.url}" alt="${res.file_name || ''}"/>`,
+                )
+              } else {
+                message.error('粘贴图片上传失败')
+              }
+            }
+          } catch (e: any) {
+            message.error(e?.message || '粘贴图片上传失败')
+          }
+        })()
+        return false // 已处理，阻止默认粘贴
+      },
       MENU_CONF: {
         uploadImage: {
           // 自定义上传：复用后端上传接口

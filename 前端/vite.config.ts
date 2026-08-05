@@ -6,10 +6,13 @@ import { inspectAttr } from 'kimi-plugin-inspect-react'
 // 后端服务地址（开发环境通过代理转发，规避跨域问题）
 const BACKEND_TARGET = 'http://192.168.3.39:23357'
 
+// kimi 调试插件仅开发模式启用，避免注入生产构建产物
+const isDev = process.env.NODE_ENV !== 'production'
+
 // https://vite.dev/config/
 export default defineConfig({
   base: './',
-  plugins: [inspectAttr(), react()],
+  plugins: [isDev ? inspectAttr() : null, react()].filter(Boolean),
   server: {
     port: 3000,
     proxy: {

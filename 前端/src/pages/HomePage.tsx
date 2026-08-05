@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
-import { fetchArticles } from '@/lib/services';
+import { fetchArticlesPage } from '@/lib/services';
 import { useFetch } from '@/hooks/useFetch';
 import { getScrollY } from '@/hooks/useListRestore';
 import { LoadingState, ErrorState, EmptyState } from '@/components/States';
@@ -164,7 +164,11 @@ export default function HomePage() {
   const numAnim = useInView(0.3);
   const newsTitleAnim = useInView(0.3);
 
-  const { data: articles, loading, error, reload } = useFetch(fetchArticles);
+  // 只取前 6 条最新动态，避免拉全量（每条约 1MB content 无意义）
+  const { data: articles, loading, error, reload } = useFetch(
+    (signal) => fetchArticlesPage(1, 6, signal).then((r) => r.list),
+    []
+  );
 
   // 首次进入播放入场动画后标记，SPA 内部再次进入首页时不再重复播放
   useEffect(() => {
@@ -267,7 +271,7 @@ export default function HomePage() {
                 controls
                 poster="assets/video/cover.png"
                 className="w-full h-44 md:h-[360px] object-cover"
-                preload="metadata"
+                preload="none"
               >
                 <source src="assets/video/video.mp4" type="video/mp4" />
                 您的浏览器不支持视频播放
