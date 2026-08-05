@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>门户端设计审计（修复后） — Design Audit</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; }
+    .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .stat-value { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+    .badge-good { background: #dcfce7; color: #166534; }
+    .badge-fair { background: #fef9c3; color: #854d0e; }
+    .badge-poor { background: #fee2e2; color: #991b1b; }
+    table { border-collapse: collapse; }
+    th { text-align: left; font-weight: 600; color: #475569; font-size: 0.875rem; padding: 10px 12px; border-bottom: 2px solid #e2e8f0; }
+    td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+    tr:hover td { background: #f8fafc; }
+
+    /* Dark mode */
+    body.dark { background: #0f172a; }
+    body.dark .card { background: #1e293b; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+    body.dark h1, body.dark h2, body.dark .stat-value, body.dark th { color: #e2e8f0 !important; }
+    body.dark .text-slate-900, body.dark .dark-mode-text { color: #e2e8f0 !important; }
+    body.dark .text-slate-700 { color: #cbd5e1 !important; }
+    body.dark .text-slate-500, body.dark .dark-mode-muted { color: #94a3b8 !important; }
+    body.dark .text-slate-400 { color: #64748b !important; }
+    body.dark .text-xs.text-slate-500 { color: #94a3b8 !important; }
+    body.dark tr:hover td { background: #1e293b; }
+    body.dark td { border-bottom-color: #334155; }
+    body.dark th { border-bottom-color: #475569; }
+    body.dark .bg-slate-50 { background: #1e293b !important; }
+    body.dark .bg-blue-50 { background: #1e3a5f !important; }
+    body.dark .bg-emerald-50 { background: #0f2a1f !important; }
+</style>
+</head>
+<body class="p-6 max-w-7xl mx-auto">
+
+<!-- Header -->
+<div class="mb-8 flex items-start justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-900 dark-mode-text">门户端设计审计（修复后）</h1>
+        <p class="text-sm text-slate-500 dark-mode-muted mt-1">Design Audit Report · Generated 2026-08-05 13:54</p>
+    </div>
+    <button onclick="toggleTheme()" class="px-3 py-1.5 border rounded-lg text-sm text-slate-600 hover:border-blue-400 transition-colors" id="theme-btn">🌙 Dark</button>
+</div>
+
+<!-- Score Cards -->
+<div class="grid grid-cols-3 gap-4 mb-8">
+    <div class="card p-6">
+        <div class="text-sm text-slate-500 mb-1">Token Consistency</div>
+        <div class="stat-value text-blue-600">75<span class="text-lg font-normal text-slate-400">/100</span></div>
+        <span class="inline-block px-2 py-0.5 rounded text-xs font-medium mt-2 badge-fair">Fair</span>
+        <div class="text-xs text-slate-400 mt-2">24 hardcoded colors, 18 inline styles</div>
+    </div>
+    <div class="card p-6">
+        <div class="text-sm text-slate-500 mb-1">Component Hygiene</div>
+        <div class="stat-value text-emerald-600">100<span class="text-lg font-normal text-slate-400">/100</span></div>
+        <span class="inline-block px-2 py-0.5 rounded text-xs font-medium mt-2 badge-n/a">N/A</span>
+        <div class="text-xs text-slate-400 mt-2">No components found</div>
+    </div>
+    <div class="card p-6">
+        <div class="text-sm text-slate-500 mb-1">Migration Readiness</div>
+        <div class="stat-value text-amber-500">85<span class="text-lg font-normal text-slate-400">/100</span></div>
+        <span class="inline-block px-2 py-0.5 rounded text-xs font-medium mt-2 badge-fair">Ready</span>
+        <div class="text-xs text-slate-400 mt-2">6/10 components covered by compat</div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid grid-cols-2 gap-4 mb-8">
+    <!-- Color Distribution -->
+    <div class="card p-6">
+        <h2 class="text-sm font-semibold text-slate-700 mb-4">Top 10 Hardcoded Colors</h2>
+        <div style="height: 280px;">
+            <canvas id="colorChart"></canvas>
+        </div>
+    </div>
+    <!-- Component Usage -->
+    <div class="card p-6">
+        <h2 class="text-sm font-semibold text-slate-700 mb-4">Component Usage Distribution</h2>
+        <div style="height: 280px;">
+            <canvas id="compChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Component Ranking Table -->
+<div class="card p-6 mb-8">
+    <h2 class="text-sm font-semibold text-slate-700 mb-4">
+        Component Usage Ranking
+        <span class="text-xs font-normal text-slate-400 ml-2">0 total usages across 0 files</span>
+    </h2>
+    <div class="overflow-x-auto">
+    <table class="w-full">
+        <thead><tr>
+            <th>Component</th>
+            <th class="text-center">Usages</th>
+            <th class="text-center">Files</th>
+            <th>Top Props</th>
+        </tr></thead>
+        <tbody></tbody>
+    </table>
+    </div>
+</div>
+
+<!-- Two-column: Unused + Less -->
+<div class="grid grid-cols-2 gap-4 mb-8">
+    <!-- Unused Imports -->
+    <div class="card p-6">
+        <h2 class="text-sm font-semibold text-slate-700 mb-4">
+            Unused Imports
+            <span class="px-2 py-0.5 rounded text-xs font-medium badge-poor ml-2">0 items</span>
+        </h2>
+        <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead><tr>
+                <th>Import</th>
+                <th class="text-center">Files</th>
+                <th>Location</th>
+            </tr></thead>
+            <tbody><tr><td colspan="3" class="text-center text-slate-400 text-sm py-4">✅ No unused imports</td></tr></tbody>
+        </table>
+        </div>
+    </div>
+    <!-- Less Variables -->
+    <div class="card p-6">
+        <h2 class="text-sm font-semibold text-slate-700 mb-4">
+            Less Constants
+            <span class="text-xs font-normal text-slate-400 ml-2">0 defined</span>
+        </h2>
+        <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead><tr>
+                <th>Variable</th>
+                <th>Value</th>
+                <th class="text-center">Used</th>
+                <th class="text-center">Status</th>
+            </tr></thead>
+            <tbody><tr><td colspan="4" class="text-center text-slate-400 text-sm py-4">No Less variables found</td></tr></tbody>
+        </table>
+        </div>
+    </div>
+</div>
+
+<!-- Inline Styles Summary -->
+<div class="card p-6 mb-8">
+    <h2 class="text-sm font-semibold text-slate-700 mb-4">
+        Inline Styles
+        <span class="text-xs font-normal text-slate-400 ml-2">18 total</span>
+    </h2>
+    <div class="grid grid-cols-3 gap-4 mb-4">
+        <div class="text-center p-4 bg-slate-50 rounded-lg">
+            <div class="text-2xl font-bold text-slate-700">18</div>
+            <div class="text-xs text-slate-500">Total</div>
+        </div>
+        <div class="text-center p-4 bg-blue-50 rounded-lg">
+            <div class="text-2xl font-bold text-blue-600">18</div>
+            <div class="text-xs text-slate-500">JSX style={{...}}</div>
+        </div>
+        <div class="text-center p-4 bg-emerald-50 rounded-lg">
+            <div class="text-2xl font-bold text-emerald-600">0</div>
+            <div class="text-xs text-slate-500">Vue style="..."</div>
+        </div>
+    </div>
+    <div class="text-xs text-slate-400">
+        🔴 Inline styles bypass design tokens. Consider extracting to CSS classes or CSS variables.
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="text-center text-xs text-slate-400 mt-12 pb-6">
+    Generated by code-to-design-audit v1.0.0 · <a href="https://github.com" class="underline">View on GitHub</a>
+</div>
+
+<script>
+// Theme toggle
+function toggleTheme() {
+    const btn = document.getElementById('theme-btn');
+    const isDark = document.body.classList.toggle('dark');
+    btn.textContent = isDark ? '☀️ Light' : '🌙 Dark';
+}
+
+// Color Distribution Chart
+new Chart(document.getElementById('colorChart'), {
+    type: 'bar',
+    data: {
+        labels: ["#111827", "#F0F2F5", "#F5F6F8", "#ccc", "#2563eb", "#e5e7eb", "#9ca3af", "#2563EB", "#fff", "#F8F9FA"],
+        datasets: [{
+            label: 'Occurrences',
+            data: [4, 4, 4, 3, 2, 2, 2, 2, 2, 1],
+            backgroundColor: ["#111827", "#F0F2F5", "#F5F6F8", "#ccc", "#2563eb", "#e5e7eb", "#9ca3af", "#2563EB", "#fff", "#F8F9FA"],
+            borderRadius: 4,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } },
+            x: { ticks: { font: { size: 11 } } }
+        }
+    }
+});
+
+// Component Usage Chart
+new Chart(document.getElementById('compChart'), {
+    type: 'doughnut',
+    data: {
+        labels: [],
+        datasets: [{
+            data: [],
+            backgroundColor: [
+                '#3b82f6','#10b981','#f59e0b','#ef4444',
+                '#8b5cf6','#ec4899','#06b6d4','#f97316'
+            ],
+            borderWidth: 2,
+            borderColor: '#fff',
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'right',
+                labels: { padding: 16, usePointStyle: true, font: { size: 12 } }
+            }
+        }
+    }
+});
+</script>
+</body>
+</html>
