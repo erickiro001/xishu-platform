@@ -290,7 +290,7 @@ export default function SolutionsPage() {
               {/* 浏览量 - 左下角 */}
               <span className="absolute bottom-2.5 left-3 flex items-center gap-1 text-[11px] text-gray-400">
                 <Eye size={12} className="text-gray-400" />
-                {(company.views ?? 0).toLocaleString()}
+                {(company.viewCount ?? 0).toLocaleString()}
               </span>
 
               {/* 查看详情 - 右下角小字 */}

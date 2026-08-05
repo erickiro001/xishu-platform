@@ -76,7 +76,7 @@ function mapCompany(c: RawCompany): Solution {
     industryField: c.industry ?? '',
     applicationLink: c.application_stage ?? '',
     solutionsCount: c.solutions_count,
-    views: c.views,
+    viewCount: c.view_count,
   }
 }
 
@@ -237,6 +237,11 @@ export async function fetchChildCategoryNames(
 export async function fetchCompanyDetail(id: string, signal?: AbortSignal): Promise<CompanyDetail> {
   const data = await request<RawCompanyDetail>(`/api/v1/companies/${id}`, { signal })
   return mapCompanyDetail(data)
+}
+
+/** 企业浏览次数 +1（进入详情页时调用，失败静默不影响页面） */
+export async function fetchCompanyView(id: string): Promise<{ id: number; view_count: number }> {
+  return request<{ id: number; view_count: number }>(`/api/v1/companies/${id}/view`, { method: 'POST' })
 }
 
 /* ───────── 需求 ───────── */

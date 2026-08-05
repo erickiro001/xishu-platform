@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { ArrowLeft } from 'lucide-react';
-import { fetchCompanyDetail } from '@/lib/services';
+import { fetchCompanyDetail, fetchCompanyView } from '@/lib/services';
 import { useFetch } from '@/hooks/useFetch';
 import { LoadingState, ErrorState } from '@/components/States';
 import ImageGallery from '@/components/ImageGallery';
@@ -23,6 +23,12 @@ export default function CompanyDetailPage() {
     (signal) => fetchCompanyDetail(id!, signal),
     [id]
   );
+
+  // 进入详情页浏览量 +1（fire-and-forget，失败不影响页面）
+  useEffect(() => {
+    if (!id) return
+    fetchCompanyView(id).catch(() => {})
+  }, [id]);
 
   return (
     <div className="min-h-screen bg-[#F5F6F8]">

@@ -8,7 +8,7 @@ export interface Solution {
   industryField: string;
   applicationLink: string;
   solutionsCount?: number;
-  views?: number;
+  viewCount?: number;
 }
 
 export interface Demand {
@@ -82,7 +82,7 @@ export interface RawCompany {
   application_stage: string;
   status: string;
   solutions_count?: number;
-  views?: number;
+  view_count?: number;
 }
 
 export interface RawCompanyImage {
