@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>犀数工场</title>
+    <style>
+      /* 关键CSS：确保导航栏在任何外部样式加载前就正确显示 */
+      #bottom-nav {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 99999 !important;
+        height: calc(64px + var(--safe-bottom, min(env(safe-area-inset-bottom, 0px), 34px))) !important;
+        background-color: #ffffff !important;
+        box-shadow: 0 -2px 8px rgba(0,0,0,0.04) !important;
+        padding-bottom: var(--safe-bottom, min(env(safe-area-inset-bottom, 0px), 34px)) !important;
+        opacity: 1 !important;
+        transform: none !important;
+        visibility: visible !important;
+        transition: none !important;
+        animation: none !important;
+      }
+      #bottom-nav, #bottom-nav * {
+        animation: none !important;
+        animation-duration: 0s !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

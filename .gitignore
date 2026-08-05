@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+
+# WorkBuddy 本地数据（工作日志、会话记忆，仅本机保留，不上传）
+.workbuddy/

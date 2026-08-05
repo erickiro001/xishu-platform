@@ -1,0 +1,322 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 安全区底部高度，封顶 34px，避免微信小程序 webview 返回异常大值导致导航过高 */
+    --safe-bottom: min(env(safe-area-inset-bottom, 0px), 34px);
+
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.625rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    /* body 本身不滚动，杜绝 iOS 橡皮筋效果带动 fixed 导航栏移动 */
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+  /* 滚动发生在内部根容器，fixed 导航栏相对视口固定、不随拖动移动 */
+  #root {
+    height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* ===== 底部导航栏 - 纯CSS，不依赖Tailwind类 ===== */
+#bottom-nav {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 99999 !important;
+  height: calc(64px + var(--safe-bottom)) !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04) !important;
+  padding-bottom: var(--safe-bottom) !important;
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+  transition: none !important;
+  animation: none !important;
+  will-change: auto !important;
+  isolation: isolate !important;
+  contain: layout style paint !important;
+  -webkit-transform: none !important;
+  -webkit-transition: none !important;
+  -webkit-animation: none !important;
+}
+
+#bottom-nav,
+#bottom-nav * {
+  animation: none !important;
+  animation-delay: 0s !important;
+  animation-duration: 0s !important;
+  animation-fill-mode: none !important;
+}
+
+#bottom-nav .bottom-nav-inner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+  height: 64px !important;
+  width: 100% !important;
+}
+
+#bottom-nav .bottom-nav-btn {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  width: 64px !important;
+  height: 100% !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+#bottom-nav .bottom-nav-btn:active {
+  transform: scale(0.95) !important;
+}
+
+#bottom-nav .bottom-nav-dot {
+  position: absolute !important;
+  bottom: -4px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 4px !important;
+  height: 4px !important;
+  border-radius: 50% !important;
+  background-color: #2563eb !important;
+}
+
+#bottom-nav .bottom-nav-label {
+  font-size: 11px !important;
+  line-height: 1 !important;
+}
+
+/* ===== 安全区适配工具类 ===== */
+/* 页面底部留白：导航栏(64px) + 安全区 + 额外间距 */
+.page-pb-safe {
+  padding-bottom: calc(80px + var(--safe-bottom)) !important;
+}
+
+/* 悬浮按钮定位：位于导航栏(64px) + 安全区之上 */
+.fab-bottom-safe {
+  bottom: calc(76px + var(--safe-bottom)) !important;
+}
+
+/* ===== 桌面端适配（≥768px） =====
+   移动端底部导航栏在桌面端由顶部导航栏(DesktopNav)取代，
+   相关的底部安全区留白/悬浮按钮定位也不再需要 */
+@media (min-width: 768px) {
+  .page-pb-safe {
+    padding-bottom: 2.5rem !important;
+  }
+  .fab-bottom-safe {
+    bottom: 2rem !important;
+  }
+  /* 页面主体内容需为固定顶部导航栏(64px)留出空间 */
+  .page-pt-desktop-nav {
+    padding-top: 4rem;
+  }
+  /* 详情页等使用 fixed 头部的场景，桌面端头部需下移到顶部导航栏之下 */
+  .fixed-header-desktop-offset {
+    top: 4rem !important;
+  }
+  /* 桌面端内容居中，限制最大宽度，避免移动端窄栏在大屏上被拉伸得过于稀疏 */
+  .desktop-container {
+    max-width: 1152px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ===== 首页 Hero 入场动画（跨平台一致，基于 keyframes） ===== */
+@keyframes heroImgIn {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes heroTitleIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-img-anim {
+  animation: heroImgIn 1s ease-out both;
+  -webkit-animation: heroImgIn 1s ease-out both;
+}
+
+.hero-title-anim {
+  animation: heroTitleIn 1s ease-out 0.3s both;
+  -webkit-animation: heroTitleIn 1s ease-out 0.3s both;
+}
+
+
+/* ───────── 新闻富文本样式 ───────── */
+.rich-text {
+  font-size: 15px;
+  line-height: 1.85;
+  color: #374151;
+  word-break: break-word;
+}
+.rich-text p {
+  margin: 0 0 1rem;
+  text-align: justify;
+}
+.rich-text h1,
+.rich-text h2,
+.rich-text h3,
+.rich-text h4 {
+  font-weight: 700;
+  color: #111827;
+  margin: 1.25rem 0 0.75rem;
+  line-height: 1.4;
+}
+.rich-text h1 { font-size: 19px; }
+.rich-text h2 { font-size: 17px; }
+.rich-text h3 { font-size: 16px; }
+.rich-text h4 { font-size: 15px; }
+.rich-text a {
+  color: #2563eb;
+  text-decoration: underline;
+  word-break: break-all;
+}
+.rich-text strong,
+.rich-text b { font-weight: 700; color: #111827; }
+.rich-text em,
+.rich-text i { font-style: italic; }
+.rich-text ul,
+.rich-text ol {
+  margin: 0 0 1rem;
+  padding-left: 1.5rem;
+}
+.rich-text ul { list-style: disc; }
+.rich-text ol { list-style: decimal; }
+.rich-text li { margin: 0.25rem 0; }
+.rich-text img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 0.75rem 0;
+}
+.rich-text blockquote {
+  margin: 0 0 1rem;
+  padding: 0.5rem 0 0.5rem 1rem;
+  border-left: 3px solid #d1d5db;
+  color: #6b7280;
+}
+.rich-text table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1rem;
+  font-size: 14px;
+}
+.rich-text th,
+.rich-text td {
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem;
+  text-align: left;
+}
+.rich-text hr {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 1.5rem 0;
+}

@@ -1,0 +1,27 @@
+/assets/*.js
+  Content-Type: application/javascript; charset=utf-8
+
+/assets/*.css
+  Content-Type: text/css; charset=utf-8
+
+/assets/*.jpg
+  Content-Type: image/jpeg
+
+/assets/*.png
+  Content-Type: image/png
+
+/assets/*.mp4
+  Content-Type: video/mp4
+
+/assets/*.svg
+  Content-Type: image/svg+xml
+
+/assets/*.woff2
+  Content-Type: font/woff2
+
+/*
+  X-Content-Type-Options: nosniff
+  Cache-Control: public, max-age=0, must-revalidate
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
